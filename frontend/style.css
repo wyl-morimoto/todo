@@ -26,7 +26,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding-top: 12px; /* 赤枠の隙間を最小限の12pxに固定 */
+    padding-top: 0;
     position: relative;
     overflow: hidden;
 }
@@ -75,8 +75,8 @@ body {
 .app-container {
     width: 95%;
     max-width: 1400px;
-    height: calc(100vh - 24px); /* 下まで最大限広げる */
-    border-radius: 20px;
+    height: 100vh;
+    border-radius: 0 0 20px 20px;
     display: flex;
     flex-direction: column;
     box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.15); /* 明るい背景に合うようにシャドウを弱めに */
