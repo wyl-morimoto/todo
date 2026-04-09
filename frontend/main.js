@@ -114,8 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <select data-id="${task.id}" data-field="assignee">
                         <option value=""></option>
                         <option value="森本" ${task.assignee === '森本' ? 'selected' : ''}>森本</option>
-                        <option value="椿" ${task.assignee === '椿' ? 'selected' : ''}>椿</option>
-                        <option value="福石" ${task.assignee === '福石' ? 'selected' : ''}>福石</option>
+                        <option value="黒瀬" ${task.assignee === '黒瀬' ? 'selected' : ''}>黒瀬</option>
+                        <option value="浅井" ${task.assignee === '浅井' ? 'selected' : ''}>浅井</option>
                     </select>
                 </td>
                 <td class="col-status">
