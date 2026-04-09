@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Todo App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-background">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="app-container glass-panel">
+        <header class="app-header">
+            <h1>Workspace Tasks</h1>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="active">未完了</button>
+                <button class="tab-btn" data-tab="completed">完了</button>
+            </div>
+        </header>
+
+        <main class="grid-container">
+            <div class="table-wrapper">
+                <table class="task-table">
+                    <thead>
+                        <tr>
+                            <th class="col-content">タスク内容</th>
+                            <th class="col-date">記入日</th>
+                            <th class="col-urgent">緊急</th>
+                            <th class="col-date">期日</th>
+                            <th class="col-assignee">担当</th>
+                            <th class="col-status">完了</th>
+                            <th class="col-actions">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="task-list">
+                        <!-- Tasks will be rendered here via JS -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 未完了タブ時のみ表示されるタスク追加フォーム -->
+            <div class="add-task-container" id="add-task-container">
+                <form id="add-task-form" class="add-task-form">
+                    <input type="text" id="new-content" placeholder="新しいタスクを入力..." required>
+                    <input type="date" id="new-entry-date" required title="記入日">
+                    <label class="checkbox-label" title="緊急">
+                        <input type="checkbox" id="new-urgent">
+                        <span class="custom-checkbox"></span>
+                        <span class="cb-text">緊急</span>
+                    </label>
+                    <input type="date" id="new-due-date" title="期日">
+                    <select id="new-assignee" title="担当">
+                        <option value="">担当者</option>
+                        <option value="森本">森本</option>
+                        <option value="椿">椿</option>
+                        <option value="福石">福石</option>
+                    </select>
+                    <button type="submit" class="primary-btn">追加</button>
+                </form>
+            </div>
+        </main>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>
