@@ -89,8 +89,17 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 16px 24px; /* Reduced header padding */
+    padding: 8px 24px; /* Header padding shrunk further */
     border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+th.sortable {
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.2s;
+}
+th.sortable:hover {
+    background-color: rgba(203, 213, 225, 0.4);
 }
 
 .app-header h1 {

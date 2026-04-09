@@ -3,9 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabBtns = document.querySelectorAll('.tab-btn');
     const addTaskForm = document.getElementById('add-task-form');
     const addTaskContainer = document.getElementById('add-task-container');
+    const sortDueDateBtn = document.getElementById('sort-due-date');
     
     let currentTab = 'active'; // 'active' or 'completed'
     let tasks = [];
+    let dueSortDirection = 'asc'; // 初期値は昇順 (近い順)
 
     // 今日の日付をセット
     const today = new Date().toISOString().split('T')[0];
@@ -21,49 +23,55 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('active');
             currentTab = btn.dataset.tab;
             
-            // 完了タブの場合は追加フォームを隠す
             if (currentTab === 'completed') {
                 addTaskContainer.classList.add('hidden');
             } else {
                 addTaskContainer.classList.remove('hidden');
             }
-            
             renderTasks();
         });
     });
 
-    // タスク追加
-    addTaskForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const newTask = {
-            content: document.getElementById('new-content').value,
-            entry_date: document.getElementById('new-entry-date').value,
-            urgent: document.getElementById('new-urgent').checked,
-            due_date: document.getElementById('new-due-date').value,
-            assignee: document.getElementById('new-assignee').value,
-            completed: false
-        };
+    // 期日ソートボタン
+    if (sortDueDateBtn) {
+        sortDueDateBtn.addEventListener('click', () => {
+            dueSortDirection = dueSortDirection === 'asc' ? 'desc' : 'asc';
+            sortDueDateBtn.innerHTML = dueSortDirection === 'asc' ? '期日 🔼' : '期日 🔽';
+            renderTasks();
+        });
+    }
 
-        try {
-            const res = await fetch('/api/tasks', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newTask)
-            });
-            if (res.ok) {
-                // リセット（記入日は維持）
-                document.getElementById('new-content').value = '';
-                document.getElementById('new-urgent').checked = false;
-                document.getElementById('new-due-date').value = '';
-                document.getElementById('new-assignee').value = '';
-                
-                await fetchTasks();
+    // タスク追加
+    if (addTaskForm) {
+        addTaskForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newTask = {
+                content: document.getElementById('new-content').value,
+                entry_date: document.getElementById('new-entry-date').value,
+                urgent: document.getElementById('new-urgent').checked,
+                due_date: document.getElementById('new-due-date').value,
+                assignee: document.getElementById('new-assignee').value,
+                completed: false
+            };
+
+            try {
+                const res = await fetch('/api/tasks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(newTask)
+                });
+                if (res.ok) {
+                    document.getElementById('new-content').value = '';
+                    document.getElementById('new-urgent').checked = false;
+                    document.getElementById('new-due-date').value = '';
+                    document.getElementById('new-assignee').value = '';
+                    await fetchTasks();
+                }
+            } catch (error) {
+                console.error('Failed to add task', error);
             }
-        } catch (error) {
-            console.error('Failed to add task', error);
-        }
-    });
+        });
+    }
 
     async function fetchTasks() {
         try {
@@ -76,12 +84,32 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function getSortedTasks(tasksList) {
+        return tasksList.sort((a, b) => {
+            // 空の日付は一番最後に回す処理
+            const dateA = a.due_date || (dueSortDirection === 'asc' ? '9999-12-31' : '0000-00-00');
+            const dateB = b.due_date || (dueSortDirection === 'asc' ? '9999-12-31' : '0000-00-00');
+            
+            if (dateA < dateB) return dueSortDirection === 'asc' ? -1 : 1;
+            if (dateA > dateB) return dueSortDirection === 'asc' ? 1 : -1;
+            
+            // 期日が同じ場合はIDでソート (安定したソート)
+            if (a.id > b.id) return -1;
+            if (a.id < b.id) return 1;
+            
+            return 0;
+        });
+    }
+
     function renderTasks() {
         taskList.innerHTML = '';
         
-        const filteredTasks = tasks.filter(task => 
+        let filteredTasks = tasks.filter(task => 
             currentTab === 'active' ? !task.completed : task.completed
         );
+
+        // ソートを適用
+        filteredTasks = getSortedTasks(filteredTasks);
 
         if (filteredTasks.length === 0) {
             const emptyMsg = currentTab === 'active' ? '未完了のタスクはありません 🎉' : '完了済みのタスクはありません';
@@ -131,27 +159,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 </td>
             `;
             
-            // 削除イベント
             const deleteBtn = tr.querySelector('.delete-btn');
             deleteBtn.addEventListener('click', () => deleteTask(task.id));
 
-            // 入力変更イベント（自動保存）
             const inputs = tr.querySelectorAll('input:not(.complete-toggle), select');
             inputs.forEach(input => {
                 input.addEventListener('change', (e) => {
                     const field = e.target.dataset.field;
                     let value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-                    updateTask(task.id, { [field]: value });
+                    // カレンダー操作等でリフレッシュが必要になるため、日付を更新した場合は自動ソート＆再描画
+                    updateTask(task.id, { [field]: value }, true);
                 });
             });
 
-            // 完了トグルイベント（アニメーションを見せるため少しディレイ）
             const toggle = tr.querySelector('.complete-toggle');
             toggle.addEventListener('change', (e) => {
                 const isCompleted = e.target.checked;
                 setTimeout(() => {
                     updateTask(task.id, { completed: isCompleted }, true);
-                }, 300); // 300ms delay to let the animation play
+                }, 300);
             });
 
             taskList.appendChild(tr);
@@ -168,7 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (res.ok && shouldRefetch) {
                 fetchTasks();
             }
-            // Background update doesn't strictly need refetch unless state moves tab
         } catch (error) {
             console.error('Failed to update task', error);
         }
