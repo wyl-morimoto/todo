@@ -74,11 +74,11 @@ body {
 .app-container {
     width: 95%;
     max-width: 1400px;
-    height: 85vh;
-    border-radius: 24px;
+    height: 92vh; /* Expanded height to fit more content */
+    border-radius: 20px;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.15); /* 明るい背景に合うようにシャドウを弱めに */
+    box-shadow: 0 20px 40px -12px rgba(15, 23, 42, 0.15); /* 明るい背景に合うようにシャドウを弱めに */
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     background: var(--glass-bg);
@@ -89,35 +89,36 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 24px 32px;
+    padding: 16px 24px; /* Reduced header padding */
     border-bottom: 1px solid rgba(226, 232, 240, 0.8);
 }
 
 .app-header h1 {
-    font-size: 1.5rem;
+    font-size: 1.3rem; /* Slightly smaller */
     font-weight: 600;
-    background: linear-gradient(to right, #0ea5e9, #10b981); /* ブルーからグリーンへの爽快なグラデーション */
+    background: linear-gradient(to right, #0ea5e9, #10b981);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     user-select: none;
+    margin-bottom: 0;
 }
 
 .tabs {
     display: flex;
     gap: 8px;
-    background: rgba(148, 163, 184, 0.15); /* 薄いグレー背景 */
-    padding: 6px;
-    border-radius: 12px;
+    background: rgba(148, 163, 184, 0.15);
+    padding: 4px;
+    border-radius: 10px;
 }
 
 .tab-btn {
     background: transparent;
     border: none;
     color: var(--text-secondary);
-    padding: 8px 16px;
-    border-radius: 8px;
+    padding: 6px 14px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     font-weight: 500;
     transition: all 0.2s ease;
 }
@@ -129,33 +130,33 @@ body {
 .tab-btn.active {
     background: #ffffff;
     color: var(--primary-color);
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.05);
 }
 
 .grid-container {
     flex: 1;
     display: flex;
     flex-direction: column;
-    padding: 24px 32px;
+    padding: 16px 24px; /* Reduced padding from 24px 32px */
     overflow: hidden;
-    gap: 20px;
+    gap: 12px; /* Reduced from 20px */
 }
 
 .table-wrapper {
     flex: 1;
     overflow-y: auto;
-    border-radius: 12px;
+    border-radius: 8px;
     background: rgba(255, 255, 255, 0.5);
     border: 1px solid rgba(226, 232, 240, 0.8);
     position: relative;
 }
 
 .table-wrapper::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 .table-wrapper::-webkit-scrollbar-thumb {
     background-color: rgba(148, 163, 184, 0.3);
-    border-radius: 4px;
+    border-radius: 3px;
 }
 
 .task-table {
@@ -166,9 +167,9 @@ body {
 
 .task-table th {
     background: var(--table-header);
-    padding: 16px 20px;
+    padding: 10px 16px; /* Considerably smaller padding */
     font-weight: 500;
-    font-size: 0.875rem;
+    font-size: 0.85rem;
     color: var(--text-secondary);
     position: sticky;
     top: 0;
@@ -178,9 +179,9 @@ body {
 }
 
 .task-table td {
-    padding: 12px 20px;
+    padding: 6px 14px; /* Reduced padding for tighter rows */
     border-bottom: 1px solid rgba(226, 232, 240, 0.6);
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     vertical-align: middle;
 }
 
@@ -201,8 +202,8 @@ body {
     color: var(--text-primary);
     font-family: inherit;
     font-size: inherit;
-    padding: 6px 8px;
-    border-radius: 6px;
+    padding: 4px 6px; /* Tighter inputs */
+    border-radius: 4px;
     width: 100%;
     transition: all 0.2s;
 }
@@ -212,6 +213,7 @@ body {
     filter: none;
     opacity: 0.5;
     cursor: pointer;
+    padding: 2px;
 }
 
 .task-table input[type="text"]:hover,
@@ -230,12 +232,12 @@ body {
 }
 
 /* Column Widths Alignment */
-.col-content { width: 38%; }
-.col-date { width: 12%; }
+.col-content { width: 40%; }
+.col-date { width: 11%; }
 .col-urgent { width: 8%; text-align: center; }
-.col-assignee { width: 12%; }
+.col-assignee { width: 11%; }
 .col-status { width: 8%; text-align: center; }
-.col-actions { width: 10%; text-align: right; }
+.col-actions { width: 9%; text-align: right; }
 
 .task-table th.col-urgent, .task-table td.col-urgent,
 .task-table th.col-status, .task-table td.col-status {
@@ -265,11 +267,11 @@ body {
 
 .checkmark {
     position: relative;
-    height: 22px;
-    width: 22px;
+    height: 18px; /* Slightly smaller for tight layout */
+    width: 18px;
     background-color: #ffffff;
     border: 1px solid rgba(148, 163, 184, 0.5);
-    border-radius: 6px;
+    border-radius: 4px;
     transition: all 0.2s ease;
     display: inline-block;
 }
@@ -293,10 +295,10 @@ body {
     content: "";
     position: absolute;
     display: none;
-    left: 7px;
-    top: 3px;
-    width: 5px;
-    height: 10px;
+    left: 5px;
+    top: 2px;
+    width: 4px;
+    height: 9px;
     border: solid white;
     border-width: 0 2px 2px 0;
     transform: rotate(45deg);
@@ -316,8 +318,8 @@ body {
 .add-task-container {
     background: rgba(255, 255, 255, 0.6);
     border: 1px solid rgba(226, 232, 240, 0.8);
-    border-radius: 12px;
-    padding: 16px 20px;
+    border-radius: 10px;
+    padding: 12px 16px; /* Tighter padding */
     transition: opacity 0.3s ease, height 0.3s ease;
 }
 
@@ -327,7 +329,7 @@ body {
 
 .add-task-form {
     display: flex;
-    gap: 16px;
+    gap: 12px;
     align-items: center;
     flex-wrap: nowrap;
 }
@@ -337,10 +339,10 @@ body {
     background: #ffffff;
     border: 1px solid rgba(203, 213, 225, 0.8);
     color: var(--text-primary);
-    padding: 10px 14px;
-    border-radius: 8px;
+    padding: 8px 12px; /* Smaller inputs */
+    border-radius: 6px;
     font-family: inherit;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     transition: all 0.2s;
 }
 
@@ -361,15 +363,15 @@ body {
     align-items: center;
     gap: 8px;
     cursor: pointer;
-    padding: 0 8px;
+    padding: 0 6px;
 }
 /* Reusing aesthetic for simple input */
 .checkbox-label input { display: none; }
 .custom-checkbox {
-    width: 20px; height: 20px;
+    width: 18px; height: 18px;
     border: 1px solid rgba(148, 163, 184, 0.5);
     background: #ffffff;
-    border-radius: 4px;
+    border-radius: 3px;
     display: inline-block;
     position: relative;
     transition: all 0.2s;
@@ -380,32 +382,32 @@ body {
 }
 .checkbox-label input:checked + .custom-checkbox::after {
     content: "";
-    position: absolute; left: 6px; top: 2px;
-    width: 4px; height: 8px;
+    position: absolute; left: 5px; top: 1px;
+    width: 4px; height: 9px;
     border: solid white; border-width: 0 2px 2px 0;
     transform: rotate(45deg);
 }
 
-.cb-text { font-size: 0.9rem; color: var(--text-secondary); font-weight: 500; }
+.cb-text { font-size: 0.85rem; color: var(--text-secondary); font-weight: 500; }
 
 .primary-btn {
     background: var(--primary-color);
     color: white;
     border: none;
-    padding: 10px 24px;
-    border-radius: 8px;
+    padding: 8px 20px;
+    border-radius: 6px;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s;
-    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.25);
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.25);
     white-space: nowrap;
 }
 
 .primary-btn:hover {
     background: var(--primary-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(14, 165, 233, 0.35);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35);
 }
 
 .primary-btn:active {
@@ -418,8 +420,8 @@ body {
     border: none;
     color: var(--text-secondary);
     cursor: pointer;
-    padding: 8px;
-    border-radius: 6px;
+    padding: 4px 6px;
+    border-radius: 4px;
     transition: all 0.2s;
     display: inline-flex;
     align-items: center;
