@@ -25,7 +25,8 @@ body {
     min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    padding-top: 12px; /* 赤枠の隙間を最小限の12pxに固定 */
     position: relative;
     overflow: hidden;
 }
@@ -74,7 +75,7 @@ body {
 .app-container {
     width: 95%;
     max-width: 1400px;
-    height: 92vh; /* Expanded height to fit more content */
+    height: calc(100vh - 24px); /* 下まで最大限広げる */
     border-radius: 20px;
     display: flex;
     flex-direction: column;
@@ -89,7 +90,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 2px 24px; /* Header padding shrunk by another 2px */
+    padding: 12px 24px; /* 文字の上下は息苦しくない程度に戻す */
     border-bottom: 1px solid rgba(226, 232, 240, 0.8);
 }
 
