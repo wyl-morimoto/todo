@@ -45,6 +45,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (addTaskForm) {
         addTaskForm.addEventListener('submit', async (e) => {
             e.preventDefault();
+            const submitBtn = addTaskForm.querySelector('button[type="submit"]');
+            if (submitBtn) submitBtn.disabled = true;
+
             const newTask = {
                 content: document.getElementById('new-content').value,
                 entry_date: document.getElementById('new-entry-date').value,
@@ -69,13 +72,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (error) {
                 console.error('Failed to add task', error);
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
             }
         });
     }
 
     async function fetchTasks() {
         try {
-            const res = await fetch('/api/tasks');
+            // キャッシュを利用せず最新のデータを確実に取得する
+            const res = await fetch('/api/tasks', { cache: 'no-store' });
             if (!res.ok) throw new Error('API Response was not ok');
             tasks = await res.json();
             renderTasks();
@@ -175,6 +181,13 @@ document.addEventListener('DOMContentLoaded', () => {
             const toggle = tr.querySelector('.complete-toggle');
             toggle.addEventListener('change', (e) => {
                 const isCompleted = e.target.checked;
+                // 表示上は即座に反映させる
+                if (isCompleted) {
+                    tr.classList.add('row-completed');
+                } else {
+                    tr.classList.remove('row-completed');
+                }
+                
                 setTimeout(() => {
                     updateTask(task.id, { completed: isCompleted }, true);
                 }, 300);
