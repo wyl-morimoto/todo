@@ -89,7 +89,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 4px 24px; /* Header padding shrunk even further to half */
+    padding: 2px 24px; /* Header padding shrunk by another 2px */
     border-bottom: 1px solid rgba(226, 232, 240, 0.8);
 }
 
