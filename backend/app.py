@@ -2,6 +2,7 @@ import os
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 
 frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'frontend'))
 app = Flask(__name__, static_folder=frontend_dir, static_url_path='')
@@ -29,6 +30,7 @@ class Task(db.Model):
     due_date = db.Column(db.String(20))
     assignee = db.Column(db.String(50))
     completed = db.Column(db.Boolean, nullable=False, default=False)
+    completed_date = db.Column(db.String(20))
 
     def to_dict(self):
         return {
@@ -38,12 +40,19 @@ class Task(db.Model):
             'urgent': self.urgent,
             'due_date': self.due_date,
             'assignee': self.assignee,
-            'completed': self.completed
+            'completed': self.completed,
+            'completed_date': self.completed_date
         }
 
 # アプリケーションコンテキスト内でテーブル作成 (存在しない場合のみ作成される)
 with app.app_context():
     db.create_all()
+    # マイグレーション: 新規カラムの追加（既に存在する場合はエラーになるため無視する）
+    try:
+        db.session.execute(text("ALTER TABLE tasks ADD COLUMN completed_date VARCHAR(20)"))
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
 
 @app.route('/')
 def index():
@@ -102,6 +111,8 @@ def update_task(task_id):
         task.assignee = data['assignee']
     if 'completed' in data:
         task.completed = bool(data['completed'])
+    if 'completed_date' in data:
+        task.completed_date = data['completed_date']
         
     db.session.commit()
     return jsonify({'success': True})
