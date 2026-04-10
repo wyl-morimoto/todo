@@ -54,8 +54,16 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (currentTab === 'completed') {
                 addTaskContainer.classList.add('hidden');
+                if (sortDueDateBtn) {
+                    sortDueDateBtn.textContent = '完了日';
+                    sortDueDateBtn.classList.remove('sortable');
+                }
             } else {
                 addTaskContainer.classList.remove('hidden');
+                if (sortDueDateBtn) {
+                    sortDueDateBtn.textContent = dueSortDirection === 'asc' ? '期日 🔼' : '期日 🔽';
+                    sortDueDateBtn.classList.add('sortable');
+                }
             }
             renderTasks();
         });
@@ -64,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 期日ソートボタン
     if (sortDueDateBtn) {
         sortDueDateBtn.addEventListener('click', () => {
+            if (currentTab === 'completed') return; // 完了タブではソートは自動なので何もしない
             dueSortDirection = dueSortDirection === 'asc' ? 'desc' : 'asc';
             sortDueDateBtn.innerHTML = dueSortDirection === 'asc' ? '期日 🔼' : '期日 🔽';
             renderTasks();
@@ -120,6 +129,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function getSortedTasks(tasksList) {
+        if (currentTab === 'completed') {
+            return tasksList.sort((a, b) => {
+                const dateA = a.completed_date || '0000-00-00';
+                const dateB = b.completed_date || '0000-00-00';
+                if (dateA > dateB) return -1;
+                if (dateA < dateB) return 1;
+                return b.id - a.id; // 新しいものが上
+            });
+        }
+
         return tasksList.sort((a, b) => {
             // 空の日付は一番最後に回す処理
             const dateA = a.due_date || (dueSortDirection === 'asc' ? '9999-12-31' : '0000-00-00');
@@ -171,7 +190,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     </label>
                 </td>
                 <td class="col-date">
-                    <input type="date" value="${task.due_date || ''}" data-id="${task.id}" data-field="due_date" />
+                    ${currentTab === 'active' 
+                        ? `<input type="date" value="${task.due_date || ''}" data-id="${task.id}" data-field="due_date" />`
+                        : `<input type="date" value="${task.completed_date || ''}" data-id="${task.id}" data-field="completed_date" />`
+                    }
                 </td>
                 <td class="col-assignee">
                     <select data-id="${task.id}" data-field="assignee">
@@ -217,8 +239,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     tr.classList.remove('row-completed');
                 }
                 
+                const updates = { completed: isCompleted };
+                if (isCompleted) {
+                    updates.completed_date = new Date().toISOString().split('T')[0];
+                } else {
+                    updates.completed_date = null;
+                }
+                
                 setTimeout(() => {
-                    updateTask(task.id, { completed: isCompleted }, true);
+                    updateTask(task.id, updates, true);
                 }, 300);
             });
 
