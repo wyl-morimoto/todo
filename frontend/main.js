@@ -16,6 +16,35 @@ document.addEventListener('DOMContentLoaded', () => {
     // 初期ロード
     fetchTasks();
 
+    // しばらく放置してからの復帰時にデータを再取得＆サーバーを活性化（アイドル対策）
+    let lastActivityTime = Date.now();
+    const WAKE_UP_THRESHOLD = 3 * 60 * 1000; // 3分
+
+    function handleActivity() {
+        const now = Date.now();
+        if (now - lastActivityTime > WAKE_UP_THRESHOLD) {
+            console.log('アイドル状態からの復帰を検知。サーバーを活性化・データを最新化します。');
+            fetchTasks();
+        }
+        lastActivityTime = now;
+    }
+
+    // イベントの発火頻度を抑える
+    let activityTimer = null;
+    function throttleActivity() {
+        if (!activityTimer) {
+            activityTimer = setTimeout(() => {
+                handleActivity();
+                activityTimer = null;
+            }, 1000);
+        }
+    }
+
+    document.addEventListener('mousemove', throttleActivity);
+    document.addEventListener('keydown', throttleActivity);
+    document.addEventListener('mousedown', throttleActivity);
+    document.addEventListener('touchstart', throttleActivity);
+
     // タブ切り替え
     tabBtns.forEach(btn => {
         btn.addEventListener('click', () => {
