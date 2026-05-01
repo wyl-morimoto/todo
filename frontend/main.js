@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const addTaskForm = document.getElementById('add-task-form');
     const addTaskContainer = document.getElementById('add-task-container');
     const sortDueDateBtn = document.getElementById('sort-due-date');
+    const downloadCsvBtn = document.getElementById('download-csv-btn');
     
     let currentTab = 'active'; // 'active' or 'completed'
     let tasks = [];
@@ -54,12 +55,14 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (currentTab === 'completed') {
                 addTaskContainer.classList.add('hidden');
+                if (downloadCsvBtn) downloadCsvBtn.style.display = 'block';
                 if (sortDueDateBtn) {
                     sortDueDateBtn.textContent = '完了日';
                     sortDueDateBtn.classList.remove('sortable');
                 }
             } else {
                 addTaskContainer.classList.remove('hidden');
+                if (downloadCsvBtn) downloadCsvBtn.style.display = 'none';
                 if (sortDueDateBtn) {
                     sortDueDateBtn.textContent = dueSortDirection === 'asc' ? '期日 🔼' : '期日 🔽';
                     sortDueDateBtn.classList.add('sortable');
@@ -113,6 +116,45 @@ document.addEventListener('DOMContentLoaded', () => {
             } finally {
                 if (submitBtn) submitBtn.disabled = false;
             }
+        });
+    }
+
+    // CSVダウンロード
+    if (downloadCsvBtn) {
+        downloadCsvBtn.addEventListener('click', () => {
+            const completedTasks = tasks.filter(t => t.completed);
+            if (completedTasks.length === 0) {
+                alert('ダウンロードする完了済みタスクがありません。');
+                return;
+            }
+
+            // CSV header
+            let csvContent = "タスク内容,記入日,期日,緊急,担当,完了日\n";
+
+            completedTasks.forEach(task => {
+                const content = `"${(task.content || '').replace(/"/g, '""')}"`;
+                const entryDate = task.entry_date || '';
+                const dueDate = task.due_date || '';
+                const urgent = task.urgent ? 'はい' : 'いいえ';
+                const assignee = task.assignee || '';
+                const completedDate = task.completed_date || '';
+                
+                csvContent += `${content},${entryDate},${dueDate},${urgent},${assignee},${completedDate}\n`;
+            });
+
+            // Excel文字化け防止用BOM
+            const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+            const blob = new Blob([bom, csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            const dateStr = new Date().toISOString().split('T')[0].replace(/-/g, '');
+            link.setAttribute('href', url);
+            link.setAttribute('download', `completed_tasks_${dateStr}.csv`);
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         });
     }
 

@@ -472,3 +472,46 @@ option {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .app-header {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .table-wrapper {
+        overflow-x: auto;
+    }
+
+    .task-table {
+        min-width: 800px; /* Minimum width to prevent cells from squishing */
+    }
+
+    .add-task-form {
+        flex-wrap: wrap;
+    }
+
+    .add-task-form > input[type="text"] {
+        width: 100%;
+        min-width: 100%;
+    }
+
+    .add-task-form > input, 
+    .add-task-form > select, 
+    .add-task-form > .checkbox-label {
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .primary-btn {
+        width: 100%;
+        margin-top: 8px;
+    }
+}
