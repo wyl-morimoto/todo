@@ -6,15 +6,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const sortDueDateBtn = document.getElementById('sort-due-date');
     const downloadCsvBtn = document.getElementById('download-csv-btn');
     
+    // UI Elements for Assignees & Mobile Modal
+    const mobileFab = document.getElementById('mobile-add-task-fab');
+    const addModalOverlay = document.getElementById('add-task-modal-overlay');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const assigneeSelect = document.getElementById('new-assignee');
+    const addAssigneeBtn = document.getElementById('add-assignee-btn');
+
     let currentTab = 'active'; // 'active' or 'completed'
     let tasks = [];
+    let assigneesList = [];
     let dueSortDirection = 'asc'; // 初期値は昇順 (近い順)
 
-    // 今日の日付をセット
     const today = new Date().toISOString().split('T')[0];
     document.getElementById('new-entry-date').value = today;
 
     // 初期ロード
+    fetchAssignees();
     fetchTasks();
 
     // しばらく放置してからの復帰時にデータを再取得＆サーバーを活性化（アイドル対策）
@@ -82,6 +90,55 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Modal Toggles
+    if (mobileFab) {
+        mobileFab.addEventListener('click', () => {
+            addModalOverlay.classList.add('active');
+        });
+    }
+
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', () => {
+            addModalOverlay.classList.remove('active');
+        });
+    }
+
+    // Overlay click to close
+    if (addModalOverlay) {
+        addModalOverlay.addEventListener('click', (e) => {
+            if (e.target === addModalOverlay) {
+                addModalOverlay.classList.remove('active');
+            }
+        });
+    }
+
+    // Add Assignee Functionality
+    if (addAssigneeBtn) {
+        addAssigneeBtn.addEventListener('click', async () => {
+            const name = prompt('追加する担当者の名前を入力してください:');
+            if (!name || name.trim() === '') return;
+
+            try {
+                const res = await fetch('/api/assignees', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name.trim() })
+                });
+                
+                if (res.ok) {
+                    await fetchAssignees();
+                    assigneeSelect.value = name.trim();
+                } else {
+                    const data = await res.json();
+                    alert(`エラー: ${data.error || '担当者の追加に失敗しました'}`);
+                }
+            } catch (error) {
+                console.error('Failed to add assignee', error);
+                alert('通信エラーが発生しました。');
+            }
+        });
+    }
+
     // タスク追加
     if (addTaskForm) {
         addTaskForm.addEventListener('submit', async (e) => {
@@ -108,8 +165,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     document.getElementById('new-content').value = '';
                     document.getElementById('new-urgent').checked = false;
                     document.getElementById('new-due-date').value = '';
-                    document.getElementById('new-assignee').value = '';
+                    assigneeSelect.value = '';
                     await fetchTasks();
+                    
+                    // Close modal on mobile
+                    if (addModalOverlay) {
+                        addModalOverlay.classList.remove('active');
+                    }
                 }
             } catch (error) {
                 console.error('Failed to add task', error);
@@ -156,6 +218,32 @@ document.addEventListener('DOMContentLoaded', () => {
             link.click();
             document.body.removeChild(link);
         });
+    }
+
+    async function fetchAssignees() {
+        try {
+            const res = await fetch('/api/assignees', { cache: 'no-store' });
+            if (!res.ok) throw new Error('API Response was not ok');
+            assigneesList = await res.json();
+            
+            // clear select options
+            if (assigneeSelect) {
+                assigneeSelect.innerHTML = '<option value="">担当者</option>';
+                assigneesList.forEach(a => {
+                    const opt = document.createElement('option');
+                    opt.value = a.name;
+                    opt.textContent = a.name;
+                    assigneeSelect.appendChild(opt);
+                });
+            }
+            
+            // Re-render tasks to update inline dropdowns
+            if (tasks.length > 0) {
+                renderTasks();
+            }
+        } catch (error) {
+            console.error('Failed to fetch assignees', error);
+        }
     }
 
     async function fetchTasks() {
@@ -240,9 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td class="col-assignee">
                     <select data-id="${task.id}" data-field="assignee">
                         <option value=""></option>
-                        <option value="森本" ${task.assignee === '森本' ? 'selected' : ''}>森本</option>
-                        <option value="黒瀬" ${task.assignee === '黒瀬' ? 'selected' : ''}>黒瀬</option>
-                        <option value="浅井" ${task.assignee === '浅井' ? 'selected' : ''}>浅井</option>
+                        ${assigneesList.map(a => `<option value="${escapeHtml(a.name)}" ${task.assignee === a.name ? 'selected' : ''}>${escapeHtml(a.name)}</option>`).join('')}
                     </select>
                 </td>
                 <td class="col-status">

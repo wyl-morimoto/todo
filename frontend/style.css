@@ -1,7 +1,7 @@
 :root {
-    --primary-color: #0ea5e9;
-    --primary-hover: #0284c7;
-    --bg-color: #f0fdfa; /* 爽やかなミント/白系背景 */
+    --primary-color: #10b981; /* 5月らしいエメラルドグリーン */
+    --primary-hover: #059669;
+    --bg-color: #f0fdf4; /* ごく薄い新緑/白系背景 */
     --glass-bg: rgba(255, 255, 255, 0.75);
     --glass-border: rgba(255, 255, 255, 0.9);
     --text-primary: #1e293b;
@@ -9,7 +9,7 @@
     --danger-color: #f43f5e;
     --success-color: #10b981;
     --table-header: rgba(241, 245, 249, 0.85);
-    --row-hover: rgba(14, 165, 233, 0.05); /* うっすら水色のホバー */
+    --row-hover: rgba(16, 185, 129, 0.05); /* うっすらグリーンのホバー */
 }
 
 * {
@@ -51,7 +51,7 @@ body {
 .blob-1 {
     width: 500px;
     height: 500px;
-    background: #38bdf8; /* 明るいスカイブルー */
+    background: #86efac; /* 新緑のライトグリーン */
     top: -50px;
     left: -100px;
 }
@@ -59,7 +59,7 @@ body {
 .blob-2 {
     width: 600px;
     height: 600px;
-    background: #6ee7b7; /* 爽やかなミントグリーン */
+    background: #7dd3fc; /* 五月晴れの青空ブルー */
     bottom: -150px;
     right: -100px;
     animation-delay: -12s;
@@ -106,7 +106,7 @@ th.sortable:hover {
 .app-header h1 {
     font-size: 1.3rem; /* Slightly smaller */
     font-weight: 600;
-    background: linear-gradient(to right, #0ea5e9, #10b981);
+    background: linear-gradient(to right, #059669, #0ea5e9); /* 新緑から青空へのグラデーション */
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     user-select: none;
@@ -238,7 +238,7 @@ th.sortable:hover {
     background: #ffffff;
     border-color: var(--primary-color);
     outline: none;
-    box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
 }
 
 /* Column Widths Alignment */
@@ -324,17 +324,55 @@ th.sortable:hover {
     100% { transform: rotate(45deg) scale(1); }
 }
 
-/* Footer Add Task Section */
+/* Mobile FAB (Hidden on Desktop) */
+.mobile-fab {
+    display: none;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+    z-index: 100;
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.mobile-fab:hover {
+    background: var(--primary-hover);
+    transform: scale(1.05);
+}
+
+.mobile-fab:active {
+    transform: scale(0.95);
+}
+
+/* Modal Overlay Wrapper (Desktop: static, Mobile: fixed overlay) */
+.add-task-modal-overlay {
+    display: block; /* Default for desktop */
+}
+
+.add-task-modal-overlay.hidden {
+    display: none !important;
+}
+
+/* Footer Add Task Section / Modal Container */
 .add-task-container {
     background: rgba(255, 255, 255, 0.6);
     border: 1px solid rgba(226, 232, 240, 0.8);
     border-radius: 10px;
-    padding: 12px 16px; /* Tighter padding */
-    transition: opacity 0.3s ease, height 0.3s ease;
+    padding: 12px 16px;
+    transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.add-task-container.hidden {
-    display: none;
+.modal-header {
+    display: none; /* Hidden on desktop */
 }
 
 .add-task-form {
@@ -349,7 +387,7 @@ th.sortable:hover {
     background: #ffffff;
     border: 1px solid rgba(203, 213, 225, 0.8);
     color: var(--text-primary);
-    padding: 8px 12px; /* Smaller inputs */
+    padding: 8px 12px;
     border-radius: 6px;
     font-family: inherit;
     font-size: 0.9rem;
@@ -360,12 +398,37 @@ th.sortable:hover {
 .add-task-form select:focus {
     outline: none;
     border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
 }
 
 #new-content {
     flex: 1;
     min-width: 250px;
+}
+
+.assignee-wrapper {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+}
+
+.add-assignee-btn {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--primary-color);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: 6px;
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.add-assignee-btn:hover {
+    background: var(--primary-color);
+    color: white;
 }
 
 .checkbox-label {
@@ -410,14 +473,14 @@ th.sortable:hover {
     font-size: 0.9rem;
     cursor: pointer;
     transition: all 0.2s;
-    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.25);
+    box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
     white-space: nowrap;
 }
 
 .primary-btn:hover {
     background: var(--primary-hover);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.35);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
 }
 
 .primary-btn:active {
@@ -491,27 +554,117 @@ option {
     }
 
     .task-table {
-        min-width: 800px; /* Minimum width to prevent cells from squishing */
+        min-width: 800px;
     }
 
+    /* Enable FAB */
+    .mobile-fab {
+        display: flex;
+    }
+
+    /* Modal Overlay */
+    .add-task-modal-overlay {
+        display: none; /* Hidden by default on mobile until FAB is clicked */
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(15, 23, 42, 0.4);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .add-task-modal-overlay.active {
+        display: flex;
+        animation: fadeInOverlay 0.2s ease-out;
+    }
+
+    @keyframes fadeInOverlay {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Modal Container */
+    .add-task-container {
+        width: 90%;
+        max-width: 400px;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2);
+        transform: translateY(20px);
+        opacity: 0;
+        animation: slideUpModal 0.3s ease-out forwards;
+    }
+
+    @keyframes slideUpModal {
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+        border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        padding-bottom: 12px;
+    }
+
+    .modal-header h2 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .close-modal-btn {
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+        line-height: 1;
+        padding: 4px;
+    }
+
+    /* Form within Modal */
     .add-task-form {
-        flex-wrap: wrap;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
     }
 
-    .add-task-form > input[type="text"] {
+    #new-content {
         width: 100%;
         min-width: 100%;
+        font-size: 1rem;
+        padding: 12px;
     }
 
-    .add-task-form > input, 
-    .add-task-form > select, 
-    .add-task-form > .checkbox-label {
-        flex: 1;
-        min-width: 120px;
+    .add-task-form input[type="date"],
+    .add-task-form select {
+        width: 100%;
+        padding: 10px;
+        font-size: 1rem;
     }
     
+    .assignee-wrapper {
+        width: 100%;
+        display: flex;
+    }
+
+    #new-assignee {
+        flex: 1;
+    }
+
     .primary-btn {
         width: 100%;
         margin-top: 8px;
+        padding: 12px;
+        font-size: 1.05rem;
+        border-radius: 8px;
     }
 }
+
